@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Santiago Cabrini — Arquitectura / Fotografía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121214;
+    --surface:#1C1C1F;
+    --ink:#EDEBE3;
+    --line:#2E2E30;
+    --stone:#8F8E88;
+    --safelight:#E8623F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  a{ color:inherit; text-decoration:none; }
+  .display{ font-family:'Archivo', sans-serif; font-weight:600; letter-spacing:-0.01em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  :focus-visible{ outline:2px solid var(--safelight); outline-offset:3px; }
+
+  header{
+    padding:22px 40px;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  header .name{ font-size:15px; font-weight:600; }
+
+  .split{
+    flex:1;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:0;
+  }
+  .panel{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:48px;
+    overflow:hidden;
+    border-right:1px solid var(--line);
+  }
+  .panel:last-child{ border-right:none; }
+  .panel::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0) 60%);
+    z-index:1;
+    pointer-events:none;
+  }
+  .panel img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    opacity:0.7;
+    transition:opacity .25s ease, transform .4s ease;
+  }
+  .panel:hover img{ opacity:0.85; transform:scale(1.03); }
+  .panel svg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    opacity:0.55;
+    transition:opacity .25s ease, transform .4s ease;
+  }
+  .panel:hover svg{ opacity:0.9; transform:scale(1.03); }
+
+  .panel .label{
+    position:relative;
+    z-index:2;
+  }
+  .panel .num{
+    font-size:13px;
+    color:var(--stone);
+    display:block;
+    margin-bottom:10px;
+  }
+  .panel h2{
+    font-size:clamp(32px, 5vw, 64px);
+    margin:0 0 12px;
+    line-height:1;
+  }
+  .panel p{
+    margin:0;
+    color:var(--stone);
+    font-size:15px;
+    max-width:32ch;
+  }
+  .panel .go{
+    margin-top:20px;
+    font-size:14px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--ink);
+    border-bottom:1px solid var(--ink);
+    width:fit-content;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .panel:hover .go{ color:var(--safelight); border-color:var(--safelight); }
+
+  footer{
+    padding:16px 40px;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:var(--stone);
+    flex-shrink:0;
+  }
+  footer a{ transition:color .15s ease; }
+  footer a:hover{ color:var(--safelight); }
+
+  @media (max-width: 780px){
+    body{ height:auto; overflow:auto; }
+    .split{ grid-template-columns:1fr; }
+    .panel{ min-height:60vh; border-right:none; border-bottom:1px solid var(--line); }
+    footer{ flex-direction:column; gap:6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="name display">Santiago Cabrini</div>
+</header>
+
+<div class="split">
+  <a class="panel" href="arquitectura.html">
+    <img src="imagenes/Caratula_arq4.jpg" alt="Arquitectura">
+
+    <div class="label">
+      <span class="num mono">01</span>
+      <h2 class="display">Arquitectura</h2>
+      <p>Proyectos y Documentación de Obra
+        </p>
+      <span class="go">Ver obra →</span>
+    </div>
+  </a>
+
+  <a class="panel" href="fotografia.html">
+    <img src="imagenes/Caratula_fot.jpg" alt="Arquitectura">
+
+    <div class="label">
+      <span class="num mono">02</span>
+      <h2 class="display">Fotografía</h2>
+      <p>Registos Fotográficos.</p>
+      <span class="go">Ver obra →</span>
+    </div>
+  </a>
+</div>
+
+<footer class="mono">
+  <span>Buenos Aires, Argentina</span>
+  <a href="mailto:tatocabrini14@gmail.com">tatocabrini14@gmail.com</a>
+</footer>
+
+</body>
+</html>

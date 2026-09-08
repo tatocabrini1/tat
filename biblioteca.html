@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Abierto — Santiago Cabrini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121214;
+    --surface:#1C1C1F;
+    --ink:#EDEBE3;
+    --line:#2E2E30;
+    --stone:#8F8E88;
+    --safelight:#E8623F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  .display{ font-family:'Archivo', sans-serif; font-weight:600; letter-spacing:-0.01em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  :focus-visible{ outline:2px solid var(--safelight); outline-offset:3px; }
+
+  header{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:22px 40px;
+    background:rgba(18,18,20,0.88);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  header .name{ font-size:15px; font-weight:600; text-decoration:none; }
+  header nav{ display:flex; gap:28px; font-size:14px; color:var(--stone); }
+  header nav a{ text-decoration:none; transition:color .15s ease; }
+  header nav a:hover{ color:var(--ink); }
+
+  main{ padding-top:88px; }
+  section{ padding:56px 40px; max-width:1100px; margin:0 auto; }
+
+  .back{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:14px;
+    color:var(--stone);
+    text-decoration:none;
+    margin-bottom:24px;
+    transition:color .15s ease;
+  }
+  .back:hover{ color:var(--safelight); }
+
+  .kicker{
+    display:block;
+    font-size:13px;
+    color:var(--stone);
+    margin-bottom:16px;
+  }
+  h1{
+    font-size:clamp(36px, 6vw, 68px);
+    line-height:1.02;
+    margin:0 0 28px;
+  }
+
+  .hero-image{
+    width:100%;
+    aspect-ratio:16/10;
+    background:var(--surface);
+    border:1px solid var(--line);
+    overflow:hidden;
+    margin-bottom:40px;
+  }
+  .hero-image img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .description{
+    font-size:18px;
+    line-height:1.7;
+    color:var(--ink);
+    max-width:64ch;
+    margin:0 0 8px;
+  }
+  .description.placeholder{ color:var(--stone); font-style:italic; }
+
+  .gallery{
+    border-top:1px solid var(--line);
+    padding-top:8px;
+  }
+  .gallery-grid{
+    column-count:2;
+    column-gap:24px;
+  }
+  .gallery-grid figure{
+    margin:0 0 24px;
+    break-inside:avoid;
+    background:var(--surface);
+    border:1px solid var(--line);
+    overflow:hidden;
+    position:relative;
+    cursor:pointer;
+  }
+  .gallery-grid figure img{
+    width:100%;
+    height:auto;
+    display:block;
+    transition:transform .5s cubic-bezier(.16,1,.3,1);
+  }
+  .gallery-grid figure:hover img{ transform:scale(1.045); }
+  .gallery-grid figure::after{
+    content:"Ver";
+    position:absolute;
+    top:14px; right:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink);
+    background:rgba(18,18,20,0.72);
+    border:1px solid var(--line);
+    padding:5px 10px;
+    opacity:0;
+    transform:translateY(-4px);
+    transition:opacity .2s ease, transform .2s ease;
+    pointer-events:none;
+  }
+  .gallery-grid figure:hover::after{ opacity:1; transform:translateY(0); }
+
+  .hero-image{
+    clip-path:inset(0 0 100% 0);
+    animation:reveal 1s cubic-bezier(.16,1,.3,1) .1s forwards;
+  }
+  .hero-image img{
+    transform:scale(1.08);
+    animation:settle 1.1s cubic-bezier(.16,1,.3,1) .1s forwards;
+  }
+  @keyframes reveal{ to{ clip-path:inset(0 0 0% 0); } }
+  @keyframes settle{ to{ transform:scale(1); } }
+  @media (prefers-reduced-motion: reduce){
+    .hero-image, .hero-image img{ animation:none; clip-path:none; transform:none; }
+    .gallery-grid figure img{ transition:none; }
+  }
+
+  .lightbox{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:rgba(10,10,11,0.95);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .25s ease;
+  }
+  .lightbox.is-open{ opacity:1; visibility:visible; }
+  .lightbox-figure{
+    max-width:min(1100px, 88vw);
+    max-height:82vh;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    align-items:center;
+  }
+  .lightbox-figure img{
+    max-width:100%;
+    max-height:74vh;
+    object-fit:contain;
+    border:1px solid var(--line);
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .lightbox.is-open .lightbox-figure img{ opacity:1; transform:translateY(0); }
+  .lightbox-counter{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--stone);
+  }
+  .lightbox-close, .lightbox-prev, .lightbox-next{
+    position:absolute;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    cursor:pointer;
+    padding:10px 14px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .lightbox-close:hover, .lightbox-prev:hover, .lightbox-next:hover{
+    color:var(--safelight); border-color:var(--safelight);
+  }
+  .lightbox-close{ top:24px; right:24px; }
+  .lightbox-prev{ left:24px; top:50%; transform:translateY(-50%); }
+  .lightbox-next{ right:24px; top:50%; transform:translateY(-50%); }
+
+  .lightbox-thumbs{
+    display:flex;
+    gap:8px;
+    margin-top:4px;
+    max-width:min(1100px, 88vw);
+    overflow-x:auto;
+    padding-bottom:4px;
+  }
+  .lightbox-thumbs::-webkit-scrollbar{ height:4px; }
+  .lightbox-thumbs::-webkit-scrollbar-thumb{ background:var(--line); }
+  .lightbox-thumbs img{
+    width:64px;
+    height:48px;
+    object-fit:cover;
+    flex-shrink:0;
+    border:1px solid var(--line);
+    opacity:0.45;
+    cursor:pointer;
+    transition:opacity .15s ease, border-color .15s ease;
+  }
+  .lightbox-thumbs img:hover{ opacity:0.75; }
+  .lightbox-thumbs img.is-active{ opacity:1; border-color:var(--safelight); }
+
+  @media (max-width: 780px){
+    .lightbox-prev{ left:12px; padding:8px 12px; }
+    .lightbox-next{ right:12px; padding:8px 12px; }
+    .lightbox-close{ top:14px; right:14px; }
+    .gallery-grid figure::after{ content:none; }
+    .lightbox-thumbs{ max-width:92vw; }
+  }
+
+  .nav-project{
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    font-size:14px;
+  }
+  .nav-project a{
+    text-decoration:none;
+    color:var(--stone);
+    transition:color .15s ease;
+  }
+  .nav-project a:hover{ color:var(--safelight); }
+
+  .qr-section{
+    border-top:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap:32px;
+    flex-wrap:wrap;
+  }
+  .qr-section .qr-box{
+    background:transparent;
+    padding:0;
+    border:1px solid var(--line);
+    line-height:0;
+    flex-shrink:0;
+  }
+  .qr-section .qr-box img{ display:block; width:140px; height:140px; }
+  .qr-section .qr-text{ max-width:36ch; }
+  .qr-section .qr-kicker{
+    display:block;
+    font-size:13px;
+    color:var(--stone);
+    margin-bottom:10px;
+  }
+  .qr-section h3{
+    font-family:'Archivo', sans-serif;
+    font-weight:600;
+    font-size:22px;
+    margin:0 0 10px;
+  }
+  .qr-section p{
+    font-size:14px;
+    color:var(--stone);
+    line-height:1.6;
+    margin:0 0 12px;
+  }
+  .qr-section a.qr-link{
+    font-size:14px;
+    text-decoration:none;
+    border-bottom:1px solid var(--line);
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .qr-section a.qr-link:hover{ color:var(--safelight); border-color:var(--safelight); }
+
+  @media (max-width: 780px){
+    .qr-section{ gap:20px; }
+    .qr-section .qr-box img{ width:110px; height:110px; }
+  }
+
+  .contact{ border-top:1px solid var(--line); }
+  .contact h2{ font-size:28px; margin:0 0 32px; }
+  .contact-links{ display:flex; flex-direction:column; gap:14px; }
+  .contact-item{ display:flex; align-items:baseline; gap:16px; }
+  .contact-item .contact-label{ font-size:13px; color:var(--stone); width:76px; flex-shrink:0; }
+  .contact-links a{
+    font-family:'Archivo', sans-serif;
+    font-weight:600;
+    font-size:clamp(16px, 2.5vw, 22px);
+    text-decoration:none;
+    width:fit-content;
+    border-bottom:1px solid transparent;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .contact-links a:hover{ color:var(--safelight); border-color:var(--safelight); }
+  .contact-meta{
+    margin-top:40px;
+    display:flex;
+    justify-content:space-between;
+    color:var(--stone);
+    font-size:13px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width: 780px){
+    header{ padding:18px 20px; }
+    section{ padding:40px 20px; }
+    .gallery-grid{ column-count:1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="name display" href="index.html">Santiago Cabrini</a>
+  <nav>
+    <a href="arquitectura.html">Volver a Arquitectura</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
+
+<main>
+
+  <section>
+    <a class="back" href="arquitectura.html">← Volver a Arquitectura</a>
+    <span class="kicker mono">Arquitectura</span>
+    <h1 class="display">Final Abierto</h1>
+
+    <div class="hero-image">
+      <!-- Reemplazá esta línea por tu foto principal del proyecto -->
+      <img src="imagenes/FA1.jpg" alt="Final Abierto">
+    </div>
+
+    <!-- Reemplazá este párrafo por el texto real del proyecto -->
+    <p class="description placeholder">Proyecto de Diseño elaborado junto a Matías Nemirovsky para Catedrá Dieguez. Primer Cuatrimestre, 2025. Arquitectura III.</p>
+  </section>
+
+  <section class="gallery">
+    <div class="gallery-grid">
+      <!-- Sumá o sacá figure según cuántas fotos tengas. Cambiá el src por el nombre real de cada archivo -->
+      <figure><img src="imagenes/FA2.jpg" alt="Final Abierto 1"></figure>
+      <figure><img src="imagenes/FA5.jpg" alt="Final Abierto 2"></figure>
+      <figure><img src="imagenes/FA7.jpg" alt="Final Abierto 4"></figure>
+      <figure><img src="imagenes/FA4.jpg" alt="Final Abierto 3"></figure>
+      <figure><img src="imagenes/FA3.jpg" alt="Final Abierto 4"></figure>
+      <figure><img src="imagenes/FA6.jpg" alt="Final Abierto 4"></figure>
+    </div>
+  </section>
+
+  <section class="nav-project">
+    <a href="arquitectura.html">← Volver a Arquitectura</a>
+  </section>
+
+  <section class="qr-section">
+    <div class="qr-box">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&color=EDEBE3&bgcolor=121214&data=https%3A%2F%2Fdrive.google.com%2Fdrive%2Ffolders%2F1G9Ek7m8RUHT4AIDfH_zRjQMc3FKjT7mD%3Fusp%3Dsharing" alt="Código QR para ver la entrega completa" loading="lazy">
+    </div>
+    <div class="qr-text">
+      <span class="qr-kicker mono">Entrega completa</span>
+      <h3 class="display">Escaneá para ver todo el material</h3>
+      <p>Planos, renders y documentación completa del proyecto en Google Drive.</p>
+      <a class="qr-link mono" href="https://drive.google.com/drive/folders/1G9Ek7m8RUHT4AIDfH_zRjQMc3FKjT7mD?usp=sharing" target="_blank" rel="noopener">Abrir carpeta →</a>
+    </div>
+  </section>
+
+  <section id="contacto" class="contact">
+    <h2 class="display">Contacto</h2>
+    <div class="contact-links">
+      <div class="contact-item">
+        <span class="contact-label mono">Mail</span>
+        <a href="mailto:tatocabrini14@gmail.com">tatocabrini14@gmail.com</a>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label mono">Instagram</span>
+        <a href="https://instagram.com/tat._.o" target="_blank" rel="noopener">@tat._.o</a>
+      </div>
+    </div>
+    <div class="contact-meta mono">
+      <span>Buenos Aires, Argentina</span>
+      <span id="year"></span>
+    </div>
+  </section>
+
+</main>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">Cerrar ✕</button>
+  <button class="lightbox-prev" id="lightboxPrev" aria-label="Imagen anterior">←</button>
+  <div class="lightbox-figure">
+    <img id="lightboxImg" src="" alt="">
+    <span class="lightbox-counter mono" id="lightboxCounter"></span>
+  </div>
+  <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+  <button class="lightbox-next" id="lightboxNext" aria-label="Imagen siguiente">→</button>
+</div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Lightbox de la galería
+  (function(){
+    const figures = Array.from(document.querySelectorAll('.gallery-grid figure'));
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const counter = document.getElementById('lightboxCounter');
+    const thumbsRail = document.getElementById('lightboxThumbs');
+    let current = 0;
+
+    // Armar la tira de miniaturas una sola vez
+    const thumbs = figures.map((fig, i) => {
+      const src = fig.querySelector('img').src;
+      const t = document.createElement('img');
+      t.src = src;
+      t.alt = '';
+      t.addEventListener('click', () => open(i));
+      thumbsRail.appendChild(t);
+      return t;
+    });
+
+    function open(index){
+      current = index;
+      const img = figures[current].querySelector('img');
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      counter.textContent = (current + 1) + ' / ' + figures.length;
+      thumbs.forEach((t, i) => t.classList.toggle('is-active', i === current));
+      thumbs[current].scrollIntoView({ block:'nearest', inline:'center', behavior:'smooth' });
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function close(){
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    function show(delta){
+      current = (current + delta + figures.length) % figures.length;
+      open(current);
+    }
+
+    figures.forEach((fig, i) => {
+      fig.addEventListener('click', () => open(i));
+    });
+    document.getElementById('lightboxClose').addEventListener('click', close);
+    document.getElementById('lightboxPrev').addEventListener('click', () => show(-1));
+    document.getElementById('lightboxNext').addEventListener('click', () => show(1));
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('is-open')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(-1);
+      if (e.key === 'ArrowRight') show(1);
+    });
+
+    // Swipe táctil para celular
+    let touchStartX = 0;
+    lightbox.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+    }, { passive:true });
+    lightbox.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) show(dx > 0 ? -1 : 1);
+    }, { passive:true });
+  })();
+</script>
+
+</body>
+</html>

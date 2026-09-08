@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrimonio Conde — Santiago Cabrini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121214;
+    --surface:#1C1C1F;
+    --ink:#EDEBE3;
+    --line:#2E2E30;
+    --stone:#8F8E88;
+    --safelight:#E8623F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  .display{ font-family:'Archivo', sans-serif; font-weight:600; letter-spacing:-0.01em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  :focus-visible{ outline:2px solid var(--safelight); outline-offset:3px; }
+
+  header{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:22px 40px;
+    background:rgba(18,18,20,0.88);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  header .name{ font-size:15px; font-weight:600; text-decoration:none; }
+  header nav{ display:flex; gap:28px; font-size:14px; color:var(--stone); }
+  header nav a{ text-decoration:none; transition:color .15s ease; }
+  header nav a:hover{ color:var(--ink); }
+
+  main{ padding-top:88px; }
+  section{ padding:56px 40px; max-width:1100px; margin:0 auto; }
+
+  .back{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:14px;
+    color:var(--stone);
+    text-decoration:none;
+    margin-bottom:24px;
+    transition:color .15s ease;
+  }
+  .back:hover{ color:var(--safelight); }
+
+  .kicker{
+    display:block;
+    font-size:13px;
+    color:var(--stone);
+    margin-bottom:16px;
+  }
+  h1{
+    font-size:clamp(36px, 6vw, 68px);
+    line-height:1.02;
+    margin:0 0 28px;
+  }
+
+  .hero-image{
+    width:100%;
+    aspect-ratio:16/10;
+    background:var(--surface);
+    border:1px solid var(--line);
+    overflow:hidden;
+    margin-bottom:40px;
+  }
+  .hero-image img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .description{
+    font-size:18px;
+    line-height:1.7;
+    color:var(--ink);
+    max-width:64ch;
+    margin:0 0 8px;
+  }
+  .description.placeholder{ color:var(--stone); font-style:italic; }
+
+  .gallery{
+    border-top:1px solid var(--line);
+    padding-top:8px;
+  }
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:24px;
+  }
+  .gallery-grid figure{
+    margin:0;
+    aspect-ratio:4/3;
+    background:var(--surface);
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .gallery-grid figure img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gallery-grid figure.tall{ aspect-ratio:3/4; }
+
+  .nav-project{
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    font-size:14px;
+  }
+  .nav-project a{
+    text-decoration:none;
+    color:var(--stone);
+    transition:color .15s ease;
+  }
+  .nav-project a:hover{ color:var(--safelight); }
+
+  .contact{ border-top:1px solid var(--line); }
+  .contact h2{ font-size:28px; margin:0 0 32px; }
+  .contact-links{ display:flex; flex-direction:column; gap:14px; }
+  .contact-item{ display:flex; align-items:baseline; gap:16px; }
+  .contact-item .contact-label{ font-size:13px; color:var(--stone); width:76px; flex-shrink:0; }
+  .contact-links a{
+    font-family:'Archivo', sans-serif;
+    font-weight:600;
+    font-size:clamp(16px, 2.5vw, 22px);
+    text-decoration:none;
+    width:fit-content;
+    border-bottom:1px solid transparent;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .contact-links a:hover{ color:var(--safelight); border-color:var(--safelight); }
+  .contact-meta{
+    margin-top:40px;
+    display:flex;
+    justify-content:space-between;
+    color:var(--stone);
+    font-size:13px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width: 780px){
+    header{ padding:18px 20px; }
+    section{ padding:40px 20px; }
+    .gallery-grid{ grid-template-columns:1fr; }
+    .gallery-grid figure.tall{ aspect-ratio:4/3; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="name display" href="index.html">Santiago Cabrini</a>
+  <nav>
+    <a href="fotografia.html">Volver a Fotografía</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
+
+<main>
+
+  <section>
+    <a class="back" href="fotografia.html">← Volver a Fotografía</a>
+    <span class="kicker mono">Fotografía</span>
+    <h1 class="display">Patrimonio Conde</h1>
+
+    <div class="hero-image">
+      <!-- Reemplazá esta línea por tu foto principal del proyecto -->
+      <img src="imagenes/patrimonio-conde-portada.jpg" alt="Patrimonio Conde">
+    </div>
+
+    <!-- Reemplazá este párrafo por el texto real del proyecto -->
+    <p class="description placeholder">Acá va la descripción del proyecto Patrimonio Conde: qué es, dónde está, de qué se trata. Reemplazá este texto por el tuyo.</p>
+  </section>
+
+  <section class="gallery">
+    <div class="gallery-grid">
+      <!-- Sumá o sacá figure según cuántas fotos tengas. Cambiá el src por el nombre real de cada archivo -->
+      <figure><img src="imagenes/patrimonio-conde-1.jpg" alt="Patrimonio Conde 1"></figure>
+      <figure class="tall"><img src="imagenes/patrimonio-conde-2.jpg" alt="Patrimonio Conde 2"></figure>
+      <figure class="tall"><img src="imagenes/patrimonio-conde-3.jpg" alt="Patrimonio Conde 3"></figure>
+      <figure><img src="imagenes/patrimonio-conde-4.jpg" alt="Patrimonio Conde 4"></figure>
+    </div>
+  </section>
+
+  <section class="nav-project">
+    <a href="fotografia.html">← Volver a Volver a Fotografía</a>
+  </section>
+
+  <section id="contacto" class="contact">
+    <h2 class="display">Contacto</h2>
+    <div class="contact-links">
+      <div class="contact-item">
+        <span class="contact-label mono">Mail</span>
+        <a href="mailto:tatocabrini14@gmail.com">tatocabrini14@gmail.com</a>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label mono">Instagram</span>
+        <a href="https://instagram.com/tat._.o" target="_blank" rel="noopener">@tat._.o</a>
+      </div>
+    </div>
+    <div class="contact-meta mono">
+      <span>Buenos Aires, Argentina</span>
+      <span id="year"></span>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

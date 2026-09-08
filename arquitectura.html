@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitectura — Santiago Cabrini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121214;
+    --surface:#1C1C1F;
+    --ink:#EDEBE3;
+    --line:#2E2E30;
+    --stone:#8F8E88;
+    --safelight:#E8623F;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  .display{ font-family:'Archivo', sans-serif; font-weight:600; letter-spacing:-0.01em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  :focus-visible{ outline:2px solid var(--safelight); outline-offset:3px; }
+
+  header{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:22px 40px;
+    background:rgba(18,18,20,0.88);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  header .name{ font-size:15px; font-weight:600; text-decoration:none; }
+  header nav{ display:flex; gap:28px; font-size:14px; color:var(--stone); align-items:center; }
+  header nav a{ text-decoration:none; transition:color .15s ease; }
+  header nav a:hover{ color:var(--ink); }
+  header nav a.switch{
+    color:var(--ink);
+    border-bottom:1px solid var(--line);
+    padding-bottom:2px;
+  }
+  header nav a.switch:hover{ border-color:var(--safelight); color:var(--safelight); }
+
+  main{ padding-top:88px; }
+  section{ padding:64px 40px; max-width:1280px; margin:0 auto; }
+
+  .hero{
+    padding-top:24px;
+    padding-bottom:24px;
+  }
+  .hero .kicker{
+    font-size:13px;
+    color:var(--stone);
+    display:block;
+    margin-bottom:16px;
+  }
+  .hero h1{
+    font-size:clamp(40px, 7vw, 84px);
+    line-height:0.98;
+    margin:0 0 20px;
+  }
+  .hero p{
+    font-size:17px;
+    color:var(--stone);
+    max-width:42ch;
+    line-height:1.6;
+    margin:0;
+  }
+
+  .work-grid{
+    display:grid;
+    grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);
+    gap:56px;
+    align-items:start;
+    border-top:1px solid var(--line);
+    padding-top:8px;
+  }
+
+  .index-list{ border-top:1px solid var(--line); }
+  .row{
+    display:grid;
+    grid-template-columns:34px 1fr;
+    align-items:baseline;
+    gap:16px;
+    padding:24px 4px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    text-decoration:none;
+    color:inherit;
+    transition:padding-left .18s ease;
+  }
+  .row:hover, .row.active{ padding-left:12px; }
+  .row:hover .row-title, .row.active .row-title{ color:var(--safelight); }
+  .row .num{ font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--stone); }
+  .row-title{ font-family:'Archivo', sans-serif; font-weight:600; font-size:22px; transition:color .15s ease; }
+  .row .desc{ grid-column:2; font-size:14px; color:var(--stone); margin-top:6px; }
+
+  .viewer{
+    position:sticky;
+    top:110px;
+    aspect-ratio:4/3;
+    background:var(--surface);
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .viewer svg{ width:100%; height:100%; display:block; }
+  .viewer img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    animation: revealImg .55s cubic-bezier(.16,1,.3,1);
+  }
+
+  @keyframes revealImg{
+    from{ opacity:0; transform:scale(1.035); }
+    to{ opacity:1; transform:scale(1); }
+  }
+
+  .contact{ border-top:1px solid var(--line); }
+  .contact h2{ font-size:28px; margin:0 0 32px; }
+  .contact-links{ display:flex; flex-direction:column; gap:14px; }
+  .contact-item{ display:flex; align-items:baseline; gap:16px; }
+  .contact-item .contact-label{ font-size:13px; color:var(--stone); width:76px; flex-shrink:0; }
+  .contact-links a{
+    font-family:'Archivo', sans-serif;
+    font-weight:600;
+    font-size:clamp(16px, 2.5vw, 22px);
+    text-decoration:none;
+    width:fit-content;
+    border-bottom:1px solid transparent;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .contact-links a:hover{ color:var(--safelight); border-color:var(--safelight); }
+  .contact-meta{
+    margin-top:40px;
+    display:flex;
+    justify-content:space-between;
+    color:var(--stone);
+    font-size:13px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width: 780px){
+    header{ padding:18px 20px; }
+    section{ padding:48px 20px; }
+    .work-grid{ grid-template-columns:1fr; gap:0; }
+    .viewer{ position:static; aspect-ratio:16/11; margin-top:16px; display:none; }
+    .viewer.open{ display:block; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="name display" href="index.html">Santiago Cabrini</a>
+  <nav>
+    <a href="#contacto">Contacto</a>
+    <a class="switch" href="fotografia.html">Fotografía</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <span class="kicker mono">01 — Arquitectura</span>
+    <h1 class="display">Proyectos de<br>arquitectura</h1>
+    <p>Programas públicos y residenciales, pensados desde la escala del uso cotidiano.</p>
+  </section>
+
+  <section>
+    <div class="work-grid">
+      <div class="index-list" id="indexList"></div>
+      <div class="viewer" id="viewer"></div>
+    </div>
+  </section>
+
+  <section id="contacto" class="contact">
+    <h2 class="display">Contacto</h2>
+    <div class="contact-links">
+      <div class="contact-item">
+        <span class="contact-label mono">Mail</span>
+        <a href="mailto:tatocabrini14@gmail.com">tatocabrini14@gmail.com</a>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label mono">Instagram</span>
+        <a href="https://instagram.com/tat._.o" target="_blank" rel="noopener">@tat._.o</a>
+      </div>
+    </div>
+    <div class="contact-meta mono">
+      <span>Buenos Aires, Argentina</span>
+      <span id="year"></span>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const projects = [
+    { title:"Final Abierto", desc:"Biblioteca en antigua usina industrial .", img:"imagenes/FA1.jpg", link:"biblioteca.html" },
+    { title:"Museo", desc:"Espacio expositivo y recorrido.", img:"imagenes/MU1.jpg", link:"museo.html" },
+    { title:"Vivienda Colectiva", desc:"Unidades de vivienda y áreas comunes.", img:"imagenes/MI1.jpg", link:"vivienda-colectiva.html" },
+      { title:"Escuela", desc:"Programa educativo, estructura y luz natural.", img:"imagenes/ES1.jpg", link:"escuela.html" },
+  ];
+
+  const indexList = document.getElementById('indexList');
+  const viewer = document.getElementById('viewer');
+  let activeIndex = 0;
+
+  function renderList(){
+    indexList.innerHTML = '';
+    projects.forEach((p, i) => {
+      const row = document.createElement('a');
+      row.href = p.link;
+      row.className = 'row';
+      if (i === activeIndex) row.classList.add('active');
+      row.innerHTML = `
+        <span class="num mono">${String(i+1).padStart(2,'0')}</span>
+        <span class="row-title">${p.title}</span>
+        <span class="desc">${p.desc}</span>
+      `;
+      row.addEventListener('mouseenter', () => setActive(i));
+      indexList.appendChild(row);
+    });
+  }
+
+  function setActive(i){
+    activeIndex = i;
+    document.querySelectorAll('.row').forEach((r, idx) => r.classList.toggle('active', idx === i));
+    viewer.innerHTML = `<img src="${projects[i].img}" alt="${projects[i].title}">`;
+  }
+
+  function openViewerMobile(){
+    if (window.innerWidth <= 780){
+      viewer.classList.add('open');
+      viewer.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  }
+
+  renderList();
+  setActive(0);
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
