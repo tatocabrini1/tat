@@ -81,14 +81,36 @@
 
   .work-grid{
     display:grid;
-    grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);
+    grid-template-columns:minmax(0,0.7fr) minmax(0,1.3fr);
     gap:56px;
     align-items:start;
     border-top:1px solid var(--line);
     padding-top:8px;
   }
 
-  .index-list{ border-top:1px solid var(--line); }
+  .index-list{
+    border-top:1px solid var(--line);
+  }
+
+  .index-nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-top:20px;
+  }
+  .index-nav .nav-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    padding:8px 16px;
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .index-nav .nav-btn:hover:not(:disabled){ color:var(--safelight); border-color:var(--safelight); }
+  .index-nav .nav-btn:disabled{ opacity:0.35; cursor:default; }
+  .index-nav .page-indicator{ font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--stone); }
   .row{
     display:grid;
     grid-template-columns:34px 1fr;
@@ -106,11 +128,12 @@
   .row .num{ font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--stone); }
   .row-title{ font-family:'Archivo', sans-serif; font-weight:600; font-size:22px; transition:color .15s ease; }
   .row .desc{ grid-column:2; font-size:14px; color:var(--stone); margin-top:6px; }
+  .row.row-empty{ visibility:hidden; pointer-events:none; }
 
   .viewer{
     position:sticky;
     top:110px;
-    aspect-ratio:4/3;
+    height:100%;
     background:var(--surface);
     border:1px solid var(--line);
     overflow:hidden;
@@ -158,6 +181,7 @@
     header{ padding:18px 20px; }
     section{ padding:48px 20px; }
     .work-grid{ grid-template-columns:1fr; gap:0; }
+    .index-list{ grid-template-columns:1fr; grid-template-rows:none; grid-auto-flow:row; column-gap:0; }
     .viewer{ position:static; aspect-ratio:16/11; margin-top:16px; display:none; }
     .viewer.open{ display:block; }
   }
@@ -183,7 +207,14 @@
 
   <section>
     <div class="work-grid">
-      <div class="index-list" id="indexList"></div>
+      <div>
+        <div class="index-list" id="indexList"></div>
+        <div class="index-nav" id="indexNav">
+          <button class="nav-btn" id="prevPage" aria-label="Proyectos anteriores">← Anteriores</button>
+          <span class="page-indicator" id="pageIndicator"></span>
+          <button class="nav-btn" id="nextPage" aria-label="Proyectos siguientes">Siguientes →</button>
+        </div>
+      </div>
       <div class="viewer" id="viewer"></div>
     </div>
   </section>
@@ -211,18 +242,32 @@
 <script>
   const projects = [
     { title:"Final Abierto", desc:"Biblioteca en antigua usina industrial .", img:"imagenes/FA1.jpg", link:"biblioteca.html" },
-    { title:"Museo", desc:"Espacio expositivo y recorrido.", img:"imagenes/MU1.jpg", link:"museo.html" },
-    { title:"Vivienda Colectiva", desc:"Unidades de vivienda y áreas comunes.", img:"imagenes/MI1.jpg", link:"vivienda-colectiva.html" },
-      { title:"Escuela", desc:"Programa educativo, estructura y luz natural.", img:"imagenes/ES1.jpg", link:"escuela.html" },
+    { title:"Museo MFM", desc:"Espacio expositivo y recorrido.", img:"imagenes/MU1.jpg", link:"museo.html" },
+    { title:"Mitosis 2050", desc:"Unidades de vivienda y áreas comunes.", img:"imagenes/MI1.jpg", link:"vivienda-colectiva.html" },
+      { title:"Densidad Fragmentada", desc:"Exploración espacial a través del recorrido", img:"imagenes/RE3.jpg", link:"escuela.html" },
+      { title:"Gorostiaga", desc:"Reforma integral de departamento de vivienda.", img:"imagenes/GO1.png", link:"gorostiaga.html" },
+      { title:"Demaría", desc:"Reforma integral de departamento de vivienda.", img:"imagenes/DE1.png", link:"demaria.html" },
+      { title:"Punta del Este — La Barra", desc:"Vivienda unifamiliar en Uruguay.", img:"imagenes/BA1.png", link:"punta-del-este.html" },
   ];
 
   const indexList = document.getElementById('indexList');
   const viewer = document.getElementById('viewer');
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  const pageIndicator = document.getElementById('pageIndicator');
+
+  const PAGE_SIZE = 4;
+  const totalPages = Math.ceil(projects.length / PAGE_SIZE);
+  let currentPage = 0;
   let activeIndex = 0;
 
   function renderList(){
     indexList.innerHTML = '';
-    projects.forEach((p, i) => {
+    const start = currentPage * PAGE_SIZE;
+    const pageItems = projects.slice(start, start + PAGE_SIZE);
+
+    pageItems.forEach((p, offset) => {
+      const i = start + offset;
       const row = document.createElement('a');
       row.href = p.link;
       row.className = 'row';
@@ -235,13 +280,45 @@
       row.addEventListener('mouseenter', () => setActive(i));
       indexList.appendChild(row);
     });
+
+    // Rellenar con filas invisibles para que la lista (y la foto) siempre midan lo mismo, aunque haya menos de 4 proyectos en esta página
+    for (let j = pageItems.length; j < PAGE_SIZE; j++){
+      const empty = document.createElement('div');
+      empty.className = 'row row-empty';
+      empty.innerHTML = `
+        <span class="num mono">00</span>
+        <span class="row-title">—</span>
+        <span class="desc">—</span>
+      `;
+      indexList.appendChild(empty);
+    }
+
+    pageIndicator.textContent = `${currentPage + 1} / ${totalPages}`;
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = currentPage === totalPages - 1;
+
+    if (totalPages <= 1) {
+      document.getElementById('indexNav').style.display = 'none';
+    }
   }
 
   function setActive(i){
     activeIndex = i;
-    document.querySelectorAll('.row').forEach((r, idx) => r.classList.toggle('active', idx === i));
+    document.querySelectorAll('.row').forEach((r, idx) => {
+      const rowIndex = currentPage * PAGE_SIZE + idx;
+      r.classList.toggle('active', rowIndex === i);
+    });
     viewer.innerHTML = `<img src="${projects[i].img}" alt="${projects[i].title}">`;
   }
+
+  function goToPage(page){
+    currentPage = Math.max(0, Math.min(totalPages - 1, page));
+    renderList();
+    setActive(currentPage * PAGE_SIZE);
+  }
+
+  prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
+  nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
 
   function openViewerMobile(){
     if (window.innerWidth <= 780){
